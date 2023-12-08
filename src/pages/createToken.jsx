@@ -433,7 +433,7 @@ function CreateToken() {
     }
   }
 
-  const [isMetaMaskConnected, setIsMetaMaskConnected] = useState(false);
+  const [isMetaMaskActive, setIsMetaMaskActive] = useState(false);
 
   // useEffect(() => {
   //   // Function to check MetaMask connection
@@ -445,41 +445,87 @@ function CreateToken() {
   //           method: "eth_requestAccounts",
   //         });
   //         if (accounts.length > 0) {
-  //           setIsMetaMaskConnected(true);
+  //           setIsMetaMaskAisMetaMaskActive(true);
   //         } else {
-  //           setIsMetaMaskConnected(false);
+  //           setIsMetaMaskAisMetaMaskActive(false);
   //         }
   //       } catch (error) {
-  //         setIsMetaMaskConnected(false);
+  //         setIsMetaMaskAisMetaMaskActive(false);
   //       }
   //     } else {
-  //       setIsMetaMaskConnected(false);
+  //       setIsMetaMaskAisMetaMaskActive(false);
   //     }
   //   };
 
   //   checkConnection();
   // }, []);
 
-  const connectMetaMask = async () => {
-    if (!provider) {
-      setEr(
-        "Ethereum provider not detected. Make sure you have metamask installed and try again."
-      );
-      return;
-    }
-    if (typeof window.ethereum !== "undefined") {
-      try {
-        // Request accounts access
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-        setIsMetaMaskConnected(true);
-      } catch (error) {
-        console.error("Error connecting MetaMask:", error);
+  useEffect(() => {
+    const checkMetaMask = async () => {
+      if (window.ethereum) {
+        try {
+          // Check if MetaMask is installed
+          const accounts = await window.ethereum.request({
+            method: "eth_accounts",
+          });
+          if (accounts.length > 0) {
+            console.log("MetaMask is active!");
+            setIsMetaMaskActive(true);
+          } else {
+            console.log("MetaMask is not active.");
+            setIsMetaMaskActive(false);
+          }
+        } catch (error) {
+          console.log("MetaMask is not active:", error);
+          setIsMetaMaskActive(false);
+        }
+
+        // Listen for account changes
+        window.ethereum.on("accountsChanged", handleAccountsChanged);
+      } else {
+        console.log("MetaMask is not installed.");
+        setIsMetaMaskActive(false);
       }
+    };
+
+    checkMetaMask();
+
+    return () => {
+      // Cleanup: Remove the event listener when component unmounts
+      if (window.ethereum) {
+        window.ethereum.removeListener(
+          "accountsChanged",
+          handleAccountsChanged
+        );
+      }
+    };
+  }, []);
+
+  const handleAccountsChanged = (accounts) => {
+    if (accounts.length === 0) {
+      // If accounts array is empty, MetaMask is disconnected
+      console.log("MetaMask disconnected.");
+      setIsMetaMaskActive(false);
     } else {
-      console.error("MetaMask extension not detected");
+      // MetaMask still has active accounts
+      console.log("MetaMask is active!");
+      setIsMetaMaskActive(true);
     }
   };
 
+  const connectToMetaMask = async () => {
+    try {
+      // Requesting access to MetaMask accounts
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      console.log("Connected to MetaMask:", accounts);
+      setIsMetaMaskActive(true);
+    } catch (error) {
+      console.log("Error connecting to MetaMask:", error);
+      setIsMetaMaskActive(false);
+    }
+  };
   return (
     <Container
       sx={{
@@ -491,7 +537,7 @@ function CreateToken() {
         mt: 5,
       }}
     >
-      {isMetaMaskConnected ? (
+      {isMetaMaskActive ? (
         <>
           <Typography variant="h6" color="primary" style={gradientStyle}>
             Create Your Custom Token
@@ -632,7 +678,7 @@ function CreateToken() {
           <Button
             variant="contained"
             color="primary"
-            onClick={connectMetaMask}
+            onClick={connectToMetaMask}
             sx={{
               background: "-webkit-linear-gradient(45deg, #8A2BE2, #FF69B4)",
               WebkitBackgroundClip: "text",

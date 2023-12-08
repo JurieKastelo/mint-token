@@ -10,23 +10,7 @@ const gradientStyle = {
 };
 
 function ConnectMetaMask() {
-  const {
-    address,
-    connectWallet,
-    chainId,
-    provider,
-    balance,
-    connectors,
-    activeProvider,
-    connector,
-  } = useWeb3();
-  console.log("address", address);
-  console.log("connectors", connectors);
-  console.log("connector", connector);
-  console.log("activeProvider", activeProvider);
-  console.log("provider", provider);
-  console.log("balance", balance);
-  console.log("chainId", chainId);
+  const { address, connectWallet } = useWeb3();
 
   const truncateAddress = (address: string) => {
     if (address) {
