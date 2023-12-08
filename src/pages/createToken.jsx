@@ -518,9 +518,36 @@ function CreateToken() {
           {deploying ? "Deploying..." : "Deploy Token"}
         </Button>
         {er && (
-          <Typography fontSize={12} color="error">
-            {er}
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography fontSize={12} mt={1} color="error">
+              {er}
+            </Typography>
+            <Button
+              href="https://metamask.io/download/"
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 1.5,
+                fontSize: 8,
+                fontWeight: 100,
+                border: "1px solid #8A2BE2",
+                mt: 2,
+              }}
+            >
+              <Typography fontSize={12} color="error" style={gradientStyle}>
+                Install MetaMask
+              </Typography>
+            </Button>
+          </Box>
         )}
 
         <Typography fontSize={12} color="textSecondary" sx={{ mt: 2 }}>
