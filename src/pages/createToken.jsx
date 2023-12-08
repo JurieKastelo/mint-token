@@ -438,6 +438,47 @@ function CreateToken() {
     }
   }
 
+  const [isMetaMaskConnected, setIsMetaMaskConnected] = useState(false);
+
+  // useEffect(() => {
+  //   // Function to check MetaMask connection
+  //   const checkConnection = async () => {
+  //     if (typeof window.ethereum !== "undefined") {
+  //       try {
+  //         // Request accounts access if not already authorized
+  //         const accounts = await window.ethereum.request({
+  //           method: "eth_requestAccounts",
+  //         });
+  //         if (accounts.length > 0) {
+  //           setIsMetaMaskConnected(true);
+  //         } else {
+  //           setIsMetaMaskConnected(false);
+  //         }
+  //       } catch (error) {
+  //         setIsMetaMaskConnected(false);
+  //       }
+  //     } else {
+  //       setIsMetaMaskConnected(false);
+  //     }
+  //   };
+
+  //   checkConnection();
+  // }, []);
+
+  const connectMetaMask = async () => {
+    if (typeof window.ethereum !== "undefined") {
+      try {
+        // Request accounts access
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        setIsMetaMaskConnected(true);
+      } catch (error) {
+        console.error("Error connecting MetaMask:", error);
+      }
+    } else {
+      console.error("MetaMask extension not detected");
+    }
+  };
+
   return (
     <Container
       sx={{
@@ -449,65 +490,180 @@ function CreateToken() {
         mt: 5,
       }}
     >
-      <Typography variant="h6" color="primary" style={gradientStyle}>
-        Create Your Custom Token
-      </Typography>
-      <Box sx={{ maxWidth: 300, textAlign: "center" }}>
-        <TextField
-          label="Token Name"
-          id="tokenName"
-          value={tokenName}
-          onChange={(e) => setTokenName(e.target.value)}
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          InputProps={{
-            sx: {
-              background: "-webkit-linear-gradient(45deg, #8A2BE2, #FF69B4)", // Apply gradient to input
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            },
-          }}
-        />
-        <TextField
-          label="Token Symbol"
-          id="tokenSymbol"
-          value={tokenSymbol}
-          onChange={(e) => setTokenSymbol(e.target.value)}
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          InputProps={{
-            sx: {
-              background: "-webkit-linear-gradient(45deg, #8A2BE2, #FF69B4)", // Apply gradient to input
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            },
-          }}
-        />
-        <TextField
-          label="Initial Supply"
-          id="tokenAmount"
-          value={tokenAmount}
-          onChange={(e) => setTokenAmount(e.target.value)}
-          variant="outlined"
-          type="number"
-          fullWidth
-          margin="normal"
-          sx={{ mb: 3 }}
-          InputProps={{
-            sx: {
-              background: "-webkit-linear-gradient(45deg, #8A2BE2, #FF69B4)", // Apply gradient to input
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            },
-          }}
-        />
+      {isMetaMaskConnected ? (
+        <>
+          <Typography variant="h6" color="primary" style={gradientStyle}>
+            Create Your Custom Token
+          </Typography>
+          <Box sx={{ maxWidth: 300, textAlign: "center" }}>
+            <TextField
+              label="Token Name"
+              id="tokenName"
+              value={tokenName}
+              onChange={(e) => setTokenName(e.target.value)}
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              InputProps={{
+                sx: {
+                  background:
+                    "-webkit-linear-gradient(45deg, #8A2BE2, #FF69B4)", // Apply gradient to input
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                },
+              }}
+            />
+            <TextField
+              label="Token Symbol"
+              id="tokenSymbol"
+              value={tokenSymbol}
+              onChange={(e) => setTokenSymbol(e.target.value)}
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              InputProps={{
+                sx: {
+                  background:
+                    "-webkit-linear-gradient(45deg, #8A2BE2, #FF69B4)", // Apply gradient to input
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                },
+              }}
+            />
+            <TextField
+              label="Initial Supply"
+              id="tokenAmount"
+              value={tokenAmount}
+              onChange={(e) => setTokenAmount(e.target.value)}
+              variant="outlined"
+              type="number"
+              fullWidth
+              margin="normal"
+              sx={{ mb: 3 }}
+              InputProps={{
+                sx: {
+                  background:
+                    "-webkit-linear-gradient(45deg, #8A2BE2, #FF69B4)", // Apply gradient to input
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                },
+              }}
+            />
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={createToken}
+              disabled={deploying} // Disable button when deploying
+              sx={{
+                background: "-webkit-linear-gradient(45deg, #8A2BE2, #FF69B4)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                mb: 1,
+              }}
+            >
+              {deploying ? "Deploying..." : "Deploy Token"}
+            </Button>
+
+            {er && (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography fontSize={12} mt={1} color="error">
+                  {er}
+                </Typography>
+                <Button
+                  href="https://metamask.io/download/"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 1.5,
+                    fontSize: 8,
+                    fontWeight: 100,
+                    border: "1px solid #8A2BE2",
+                    mt: 2,
+                  }}
+                >
+                  <Typography fontSize={12} color="error" style={gradientStyle}>
+                    Install MetaMask
+                  </Typography>
+                </Button>
+              </Box>
+            )}
+
+            <Typography fontSize={12} color="textSecondary" sx={{ mt: 2 }}>
+              Your token address will be displayed below once the deployment is
+              complete.
+            </Typography>
+            {deployedAddress ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Button
+                  onClick={handleCopyAddress}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 1.5,
+                    fontSize: 8,
+                    fontWeight: 100,
+                    border: "1px solid #8A2BE2",
+                    mt: 2,
+                  }}
+                >
+                  <Typography ml={1.5} fontSize={12} style={gradientStyle}>
+                    {truncateAddress(deployedAddress)}
+                  </Typography>
+                  <Box sx={{ minWidth: 40, bgcolor: "none" }}>
+                    {copied ? tick : copy}
+                  </Box>
+                </Button>
+              </Box>
+            ) : (
+              <>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 1.5,
+                    fontSize: 8,
+                    fontWeight: 100,
+                    border: "1px solid #8A2BE2",
+                    mt: 2,
+                  }}
+                >
+                  <Typography fontSize={12} style={gradientStyle}>
+                    .Contract Address.
+                  </Typography>
+                </Box>
+              </>
+            )}
+            <Typography fontSize={12} color="textSecondary" sx={{ mt: 2 }}>
+              You can copy the address and paste it in your metamask.
+            </Typography>
+          </Box>
+        </>
+      ) : (
         <Button
           variant="contained"
           color="primary"
-          onClick={createToken}
-          disabled={deploying} // Disable button when deploying
+          onClick={connectMetaMask}
           sx={{
             background: "-webkit-linear-gradient(45deg, #8A2BE2, #FF69B4)",
             WebkitBackgroundClip: "text",
@@ -515,101 +671,9 @@ function CreateToken() {
             mb: 1,
           }}
         >
-          {deploying ? "Deploying..." : "Deploy Token"}
+          Connect Wallet
         </Button>
-        {er && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Typography fontSize={12} mt={1} color="error">
-              {er}
-            </Typography>
-            <Button
-              href="https://metamask.io/download/"
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 1.5,
-                fontSize: 8,
-                fontWeight: 100,
-                border: "1px solid #8A2BE2",
-                mt: 2,
-              }}
-            >
-              <Typography fontSize={12} color="error" style={gradientStyle}>
-                Install MetaMask
-              </Typography>
-            </Button>
-          </Box>
-        )}
-
-        <Typography fontSize={12} color="textSecondary" sx={{ mt: 2 }}>
-          Your token address will be displayed below once the deployment is
-          complete.
-        </Typography>
-        {deployedAddress ? (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Button
-              onClick={handleCopyAddress}
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 1.5,
-                fontSize: 8,
-                fontWeight: 100,
-                border: "1px solid #8A2BE2",
-                mt: 2,
-              }}
-            >
-              <Typography ml={1.5} fontSize={12} style={gradientStyle}>
-                {truncateAddress(deployedAddress)}
-              </Typography>
-              <Box sx={{ minWidth: 40, bgcolor: "none" }}>
-                {copied ? tick : copy}
-              </Box>
-            </Button>
-          </Box>
-        ) : (
-          <>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 1.5,
-                fontSize: 8,
-                fontWeight: 100,
-                border: "1px solid #8A2BE2",
-                mt: 2,
-              }}
-            >
-              <Typography fontSize={12} style={gradientStyle}>
-                .Contract Address.
-              </Typography>
-            </Box>
-          </>
-        )}
-        <Typography fontSize={12} color="textSecondary" sx={{ mt: 2 }}>
-          You can copy the address and paste it in your metamask.
-        </Typography>
-      </Box>
+      )}
       {/* {deployedAddress && ( // Render only if deployedAddress exists
         <Typography fontSize={9} color="textSecondary" sx={{ mt: 2 }}>
           Token deployed at address:
