@@ -1,7 +1,6 @@
 import type { AppProps } from "next/app";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "../theme";
-import TopNav from "@/components/TopNav";
 import { ThirdwebWeb3Provider, ThirdwebWeb3ProviderProps } from "@3rdweb/hooks";
 import "regenerator-runtime/runtime";
 
