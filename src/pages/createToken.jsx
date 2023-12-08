@@ -390,10 +390,9 @@ function CreateToken() {
     }, 2000);
   };
 
-  const [provider, setProvider] = useState(null); // State to hold the injected provider
+  const [provider, setProvider] = useState(null);
 
   useEffect(() => {
-    // Function to set up injected provider
     async function setupProvider() {
       if (window.ethereum) {
         const injectedProvider = new ethers.providers.Web3Provider(
@@ -406,9 +405,13 @@ function CreateToken() {
     setupProvider();
   }, []);
 
+  const [er, setEr] = useState(null);
+
   async function createToken() {
     if (!provider) {
-      console.log("Ethereum provider not detected");
+      setEr(
+        "Ethereum provider not detected. Make sure you have metamask installed and try again."
+      );
       return;
     }
     setDeploying(true);
@@ -425,6 +428,7 @@ function CreateToken() {
       await contract.deployed();
       console.log("Token deployed at address:", contract.address);
       setDeployedAddress(contract.address);
+      setDeploying(false);
       // ... (rest of your logic)
     } catch (error) {
       console.error("Error deploying contract:", error);
@@ -513,6 +517,12 @@ function CreateToken() {
         >
           {deploying ? "Deploying..." : "Deploy Token"}
         </Button>
+        {er && (
+          <Typography fontSize={12} color="error">
+            {er}
+          </Typography>
+        )}
+
         <Typography fontSize={12} color="textSecondary" sx={{ mt: 2 }}>
           Your token address will be displayed below once the deployment is
           complete.
