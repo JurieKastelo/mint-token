@@ -363,6 +363,8 @@ const gradientStyle = {
   WebkitTextFillColor: "transparent",
 };
 
+function checkMetaMask() {}
+
 function CreateToken() {
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
@@ -408,14 +410,6 @@ function CreateToken() {
   const [er, setEr] = useState(null);
 
   async function createToken() {
-    if (!provider) {
-      setEr(
-        "Ethereum provider not detected. Make sure you have metamask installed and try again."
-      );
-      return;
-    }
-    setDeploying(true);
-
     try {
       const signer = provider.getSigner();
       const contractFactory = new ethers.ContractFactory(abi, bytecode, signer);
@@ -466,6 +460,13 @@ function CreateToken() {
   // }, []);
 
   const connectMetaMask = async () => {
+    if (!provider) {
+      setEr(
+        "Ethereum provider not detected. Make sure you have metamask installed and try again."
+      );
+      return;
+    }
+    setDeploying(true);
     if (typeof window.ethereum !== "undefined") {
       try {
         // Request accounts access
@@ -565,39 +566,6 @@ function CreateToken() {
               {deploying ? "Deploying..." : "Deploy Token"}
             </Button>
 
-            {er && (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Typography fontSize={12} mt={1} color="error">
-                  {er}
-                </Typography>
-                <Button
-                  href="https://metamask.io/download/"
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: 1.5,
-                    fontSize: 8,
-                    fontWeight: 100,
-                    border: "1px solid #8A2BE2",
-                    mt: 2,
-                  }}
-                >
-                  <Typography fontSize={12} color="error" style={gradientStyle}>
-                    Install MetaMask
-                  </Typography>
-                </Button>
-              </Box>
-            )}
-
             <Typography fontSize={12} color="textSecondary" sx={{ mt: 2 }}>
               Your token address will be displayed below once the deployment is
               complete.
@@ -660,19 +628,56 @@ function CreateToken() {
           </Box>
         </>
       ) : (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={connectMetaMask}
-          sx={{
-            background: "-webkit-linear-gradient(45deg, #8A2BE2, #FF69B4)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            mb: 1,
-          }}
-        >
-          Connect Wallet
-        </Button>
+        <>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={connectMetaMask}
+            sx={{
+              background: "-webkit-linear-gradient(45deg, #8A2BE2, #FF69B4)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              mb: 1,
+            }}
+          >
+            Connect Wallet
+          </Button>
+          <Typography fontSize={12} color="textSecondary" sx={{ mt: 2 }}>
+            Please connect your wallet to continue.
+          </Typography>
+          {er && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography fontSize={12} mt={1} color="error">
+                {er}
+              </Typography>
+              <Button
+                href="https://metamask.io/download/"
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 1.5,
+                  fontSize: 8,
+                  fontWeight: 100,
+                  border: "1px solid #8A2BE2",
+                  mt: 2,
+                }}
+              >
+                <Typography fontSize={12} color="error" style={gradientStyle}>
+                  Install MetaMask
+                </Typography>
+              </Button>
+            </Box>
+          )}
+        </>
       )}
       {/* {deployedAddress && ( // Render only if deployedAddress exists
         <Typography fontSize={9} color="textSecondary" sx={{ mt: 2 }}>
