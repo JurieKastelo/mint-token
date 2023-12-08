@@ -410,6 +410,7 @@ function CreateToken() {
   const [er, setEr] = useState(null);
 
   async function createToken() {
+    setDeploying(true);
     try {
       const signer = provider.getSigner();
       const contractFactory = new ethers.ContractFactory(abi, bytecode, signer);
@@ -466,7 +467,6 @@ function CreateToken() {
       );
       return;
     }
-    setDeploying(true);
     if (typeof window.ethereum !== "undefined") {
       try {
         // Request accounts access
