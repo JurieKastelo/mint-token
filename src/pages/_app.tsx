@@ -3,6 +3,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "../theme";
 import { ThirdwebWeb3Provider, ThirdwebWeb3ProviderProps } from "@3rdweb/hooks";
 import "regenerator-runtime/runtime";
+import TopNav from "@/components/TopNav2";
 
 const supportedChainIds = [1, 3, 4, 5, 42, 56, 97, 128, 137, 80001, 11155111];
 const connectors = {
@@ -21,6 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <ThirdwebWeb3Provider {...web3ProviderProps}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        <TopNav />
         <Component {...pageProps} />
       </ThemeProvider>
     </ThirdwebWeb3Provider>
