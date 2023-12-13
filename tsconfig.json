@@ -25,6 +25,6 @@
     "src/components/TokenForm.js",
     "test.js",
     "src/pages/_app.js"
-  ],
+, "src/pages/createToken.jsx", "src/pages/createToken.jsx", "src/pages/metamask.jsx"  ],
   "exclude": ["node_modules"]
 }
